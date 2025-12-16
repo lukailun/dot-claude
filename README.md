@@ -35,6 +35,8 @@
    ```
 
    > **提示**: 如果你不使用 Linear 集成功能，可以跳过此步骤或留空该值。
+   
+   	> [Linear Personal API Keys](https://linear.app/developers/graphql#personal-api-keys)
 
 3. **安装 Bun**
 
@@ -53,9 +55,28 @@
    bun install
    ```
 
-5. **开始使用**
+5. **配置 Claude Code Settings**
 
-   配置完成后，该 hook 会在你使用 Claude Code 时自动运行，无需手动执行。
+   编辑 `~/.claude/settings.json` 文件，添加以下 hooks 配置：
+
+   ```json
+   {
+     "hooks": {
+       "UserPromptSubmit": [{
+         "hooks": [{
+           "type": "command",
+           "command": "bun run $HOME/.claude/hooks/UserPromptSubmit.ts"
+         }]
+       }]
+     }
+   }
+   ```
+
+   > **提示**: 如果你的 `settings.json` 中已有其他配置，请将 `hooks` 部分合并到现有配置中。
+
+6. **开始使用**
+
+   配置完成后，该 hook 会在你使用 Claude Code 提交提示词时自动运行。
 
 ## 功能特性
 
@@ -94,18 +115,25 @@
 **使用方法**:
 
 支持两种格式：
-- 完整格式：`linear(TEAM-123)`
-- 简写格式：`4t(1111)` （会自动转换为 `4t-1111`）
+
+* 完整格式：`linear(4t-1111)`
+* 简写格式：`4t(1111)`
 
 **示例**:
+
 ```
-修复 linear(TEAM-123) 中描述的 bug
-优化 4t(1234) 的性能问题
+修复 linear(4t-1111) 中描述的 bug
 ```
 
-会自动将 `linear(TEAM-123)` 和 `4t(1234)` 替换为对应 issue 的完整 JSON 数据，包括标题、描述、状态等信息。
+```
+优化 4t(1111) 的性能问题
+```
 
-**配置**: 需要在 `~/.claude/.env` 中设置 `LINEAR_API_KEY`
+会自动将 `linear(4t-1111)` 和 `4t(1111)` 替换为对应 issue 的完整 JSON 数据，包括标题、描述、状态等信息。
+
+> **提示**: 需要在 `~/.claude/.env` 中设置 `LINEAR_API_KEY`。
+
+> [Linear Personal API Keys](https://linear.app/developers/graphql#personal-api-keys)
 
 ### 3. 多方案生成
 
@@ -119,4 +147,20 @@
 ```
 
 会生成 3 个不同的用户认证实现方案。
+
+## 组合使用
+
+以上功能可以组合使用：
+
+**示例**:
+
+```
+4t(1111):debug          # Linear 引用 + 调试分析
+```
+
+**处理顺序**:
+
+1. **Linear 引用处理** - 替换 `linear(issueId)` 或 `4t(1111)` 为实际数据
+2. **命令处理** - 识别并展开 `:command` 命令快捷方式
+3. **多方案处理** - 处理 `v(n)` 生成多个方案
 
