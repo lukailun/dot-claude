@@ -24,7 +24,7 @@
 	├── hooks/
 	├── commands/
 	└── prompts/
-```
+	```
 
 * **配置环境变量**
 
