@@ -1,0 +1,1 @@
+Generate $count different solutions for: $instruction

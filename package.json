@@ -1,0 +1,19 @@
+{
+  "name": "ai-dev-kit",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "bun test --recursive",
+    "test:hooks": "cd packages/hooks && bun test",
+    "build:core": "cd packages/core && bun build ./src/index.ts --outdir=dist",
+    "build:hooks": "cd packages/hooks && bun build ./src/index.ts --outdir=dist",
+    "build:adapters": "cd packages/adapters && bun build ./claude/UserPromptSubmit.ts --outdir=dist"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5"
+  }
+}
