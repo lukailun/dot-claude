@@ -34,9 +34,9 @@ ai-dev-kit/
 │   └── adapters/                # @ai-dev-kit/adapters - 平台适配层
 │       ├── claude/              # Claude Code 适配器
 │       └── cursor/              # Cursor 适配器（预留）
-├── .claude/                     # 向后兼容层
+├── .claude/                     # Claude Code 配置目录
 │   ├── hooks/
-│   │   └── UserPromptSubmit.ts  # 包装层入口（从新包重导出）
+│   │   └── UserPromptSubmit.ts  # Hook 入口文件
 │   └── prompts/
 │       └── variations.md        # 多种方案模板
 └── README.md                    # 本文件
@@ -264,24 +264,6 @@ UserPromptSubmit Hook
     3. Variation Processor
         ↓
     输出处理后的提示词
-```
-
-## 向后兼容
-
-`.claude/hooks` 目录保持为向后兼容层，所有文件都已改为从新包重导出。这意味着：
-
-- ✅ 现有的 `settings.json` 配置无需修改
-- ✅ 旧的导入路径仍然可用
-- ✅ 所有测试在新旧位置都通过
-
-如果您想直接使用新包，可以修改导入：
-
-```typescript
-// 旧方式（仍然有效）
-import { processCommand } from './.claude/hooks/processors/commandProcessor';
-
-// 新方式（推荐）
-import { processCommand } from '@ai-dev-kit/hooks/processors';
 ```
 
 ## 路线图
