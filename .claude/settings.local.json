@@ -3,7 +3,9 @@
     "allow": [
       "Bash(bun test:*)",
       "Bash(ls:*)",
-      "Bash(bun install:*)"
+      "Bash(bun install:*)",
+      "Bash(bun:*)",
+      "Bash(test:*)"
     ]
   }
 }

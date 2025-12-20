@@ -1,27 +1,5 @@
-import { COMMANDS, type CommandKey } from "../config/commands/index";
-
 /**
- * 处理命令前缀
- * 为以特定命令结尾的 prompt 添加对应的前缀
- * 示例: Hello :zh
+ * 向后兼容导出
+ * @deprecated 请直接使用 @ai-dev-kit/hooks/processors
  */
-
-export const processCommand = (prompt: string): string => {
-  const trimmedPrompt = prompt.trim();
-
-   const matchedCommand = (Object.keys(COMMANDS) as CommandKey[]).find(
-    (command) => trimmedPrompt.endsWith(command)
-  );
-
-  if (!matchedCommand) {
-    return prompt;
-  }
-
-  const task = trimmedPrompt.slice(0, -matchedCommand.length).trim();
-
-  if (!task) {
-    return prompt;
-  }
-
-  return `${COMMANDS[matchedCommand].prefix}${task}`;
-};
+export { processCommand } from '@ai-dev-kit/hooks/processors';

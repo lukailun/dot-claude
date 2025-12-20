@@ -1,8 +1,29 @@
+# Dependencies
 node_modules/
+**/node_modules/
+
+# Logs
 *.log
+
+# OS
 .DS_Store
+
+# Environment
 .env
 .env.local
+**/.env
+**/.env.local
+
+# Build
 bun.lockb
 dist/
+**/dist/
 *.tsbuildinfo
+
+# Test artifacts
+test-home/
+**/test-home/
+
+# Backups
+.backup/
+**/.backup/

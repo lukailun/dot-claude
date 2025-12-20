@@ -1,8 +1,4 @@
-/**
- * 向后兼容包装层
- * 此文件保持在原位置以确保 settings.json 中的路径引用有效
- */
-import { type UserPromptSubmitHookInput } from "@anthropic-ai/claude-agent-sdk";
+import type { UserPromptSubmitHookInput } from "@anthropic-ai/claude-agent-sdk";
 import { getEnabledProcessors } from "@ai-dev-kit/hooks";
 
 try {

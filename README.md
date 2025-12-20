@@ -1,6 +1,10 @@
-# Claude Code Hooks
+# AI-Dev-Kit
 
-这是一个增强 Claude Code 用户体验的 hooks 项目，通过 UserPromptSubmit Hook 提供智能提示词处理功能。
+一个支持多 AI IDE 平台的开发工具包，提供统一的 prompt 处理和工作流增强功能。
+
+## 项目简介
+
+AI-Dev-Kit 是一个 Monorepo 架构的项目，旨在为 Claude Code、Cursor 等 AI IDE 提供可复用的 hook、processor 和工具函数。通过模块化设计，您可以轻松地扩展功能、添加新的处理器，并在不同平台间共享核心逻辑。
 
 ## 前置要求
 
@@ -12,28 +16,36 @@
 curl -fsSL https://bun.sh/install | bash
 ```
 
-## 目录结构
+## 架构设计
 
 ```
-.claude/
-├── hooks/
-│   ├── UserPromptSubmit.ts           # 主 Hook 入口
-│   ├── config/
-│   │   ├── commands/                 # 命令配置
-│   │   │   ├── index.ts              # 命令汇总
-│   │   │   ├── code-development.ts   # 代码开发类命令
-│   │   │   ├── text-processing.ts    # 文本处理类命令
-│   │   │   └── translation.ts        # 翻译类命令
-│   │   └── processors.ts             # Processor 配置
-│   └── processors/
-│       ├── commandProcessor.ts       # 命令处理器
-│       ├── linearProcessor.ts        # Linear 集成处理器
-│       ├── variationProcessor.ts     # 变体生成处理器
-│       └── *.test.ts                 # 测试文件
-├── prompts/
-│   └── variations.md                 # 多种方案模板
-├── .env.template                     # 环境变量模板
-└── README.md                         # 本文件
+ai-dev-kit/
+├── packages/
+│   ├── core/                    # @ai-dev-kit/core - 核心类型和工具
+│   │   └── src/
+│   │       ├── types/          # 处理器类型、命令类型等
+│   │       └── utils/          # 环境变量工具、路径工具等
+│   ├── hooks/                   # @ai-dev-kit/hooks - 处理器实现
+│   │   ├── src/
+│   │   │   ├── processors/     # Linear、Command、Variation 处理器
+│   │   │   ├── commands/       # 命令配置（翻译、代码、文本处理）
+│   │   │   └── config.ts       # 处理器配置管理
+│   │   └── tests/              # 50+ 测试用例
+│   └── adapters/                # @ai-dev-kit/adapters - 平台适配层
+│       ├── claude/              # Claude Code 适配器
+│       └── cursor/              # Cursor 适配器（预留）
+├── .claude/                     # 向后兼容层
+│   ├── hooks/
+│   │   └── UserPromptSubmit.ts  # 包装层入口（从新包重导出）
+│   └── prompts/
+│       └── variations.md        # 多种方案模板
+└── README.md                    # 本文件
+```
+
+### 包依赖关系
+
+```
+@ai-dev-kit/adapters → @ai-dev-kit/hooks → @ai-dev-kit/core
 ```
 
 ## 核心功能
@@ -123,17 +135,17 @@ Processors 可以组合使用，按顺序执行：
 ### 1. 安装依赖
 
 ```bash
-cd .claude/hooks
+# 在项目根目录安装所有依赖
 bun install
 ```
 
 ### 2. 配置环境变量（可选）
 
-如果需要使用 Linear 集成功能：
+如果需要使用 Linear 集成功能，在 `~/.claude/.env` 中配置：
 
 ```bash
-cp .env.template .env
-# 编辑 .env 文件，填入你的 LINEAR_API_KEY
+# LINEAR API Key
+LINEAR_API_KEY=your_linear_api_key_here
 ```
 
 ### 3. 开始使用
@@ -154,42 +166,18 @@ Hello World :zh
 优化数据库查询 v(2) :analyze
 
 # Linear 集成
-修复 linear(TEAM-123) 中的问题
+修复 LINEAR-123 中的问题
 ```
 
-## 自定义配置
-
-### 启用/禁用 Processors
-
-编辑 `.claude/hooks/config/processors.ts` 文件：
-
-```typescript
-export const AVAILABLE_PROCESSORS: ProcessorConfig[] = [
-  {
-    name: 'linear',
-    processor: processLinearReference,
-    enabled: true  // 设置为 false 禁用
-  },
-  {
-    name: 'command',
-    processor: processCommand,
-    enabled: true
-  },
-  {
-    name: 'variation',
-    processor: processVariation,
-    enabled: true
-  }
-];
-```
+## 开发指南
 
 ### 添加新命令
 
-在 `.claude/hooks/config/commands/` 目录下的对应文件中添加：
+在 `packages/hooks/src/commands/` 目录下的相应文件中添加：
 
 ```typescript
 // 例如在 text-processing.ts 中添加
-export const TEXT_PROCESSING = {
+export const TEXT_PROCESSING: CommandRegistry = {
   ':custom': {
     prefix: '你的自定义前缀：',
     description: '自定义命令描述'
@@ -198,11 +186,70 @@ export const TEXT_PROCESSING = {
 };
 ```
 
+然后在 `packages/hooks/src/commands/index.ts` 中导出。
+
 ### 添加新 Processor
 
-1. 在 `.claude/hooks/processors/` 创建新的 processor 文件
-2. 在 `.claude/hooks/config/processors.ts` 注册新 processor
-3. 编写测试文件
+1. 在 `packages/hooks/src/processors/` 创建新文件：
+
+```typescript
+import type { Processor } from '@ai-dev-kit/core';
+
+export const processYourFeature: Processor = async (prompt: string): Promise<string> => {
+  // 你的处理逻辑
+  return processedPrompt;
+};
+```
+
+2. 在 `packages/hooks/src/config.ts` 注册：
+
+```typescript
+export const AVAILABLE_PROCESSORS: ProcessorConfig[] = [
+  {
+    name: 'your-feature',
+    processor: processYourFeature,
+    enabled: true
+  },
+  // ... 其他处理器
+];
+```
+
+3. 编写测试（在 `packages/hooks/tests/`）
+
+### 处理器执行顺序
+
+处理器按照 `AVAILABLE_PROCESSORS` 数组的顺序依次执行：
+
+1. **Linear Processor** - 处理 Linear Issue 引用
+2. **Command Processor** - 处理命令后缀
+3. **Variation Processor** - 处理变体生成
+
+每个处理器的输出作为下一个处理器的输入。
+
+## 测试
+
+### 运行所有测试
+
+```bash
+bun test --recursive
+```
+
+### 运行特定包的测试
+
+```bash
+# 测试 Hooks 包
+bun run test:hooks
+
+# 或直接进入目录
+cd packages/hooks && bun test
+```
+
+### 测试覆盖
+
+项目包含 50+ 个测试用例，覆盖：
+- 单元测试 - 每个处理器的独立功能
+- 集成测试 - 处理器链条的组合功能
+- 边缘情况 - 异常输入、空值处理等
 
 ## 项目架构
 
@@ -219,13 +266,59 @@ UserPromptSubmit Hook
     输出处理后的提示词
 ```
 
+## 向后兼容
+
+`.claude/hooks` 目录保持为向后兼容层，所有文件都已改为从新包重导出。这意味着：
+
+- ✅ 现有的 `settings.json` 配置无需修改
+- ✅ 旧的导入路径仍然可用
+- ✅ 所有测试在新旧位置都通过
+
+如果您想直接使用新包，可以修改导入：
+
+```typescript
+// 旧方式（仍然有效）
+import { processCommand } from './.claude/hooks/processors/commandProcessor';
+
+// 新方式（推荐）
+import { processCommand } from '@ai-dev-kit/hooks/processors';
+```
+
+## 路线图
+
+- [x] 基础 Monorepo 架构
+- [x] 核心处理器（Linear、Command、Variation）
+- [x] Claude Code 适配器
+- [ ] Cursor 适配器
+- [ ] CLI 工具
+- [ ] Skills 包
+- [ ] Subagents 包
+- [ ] NPM 发布
+
+## 贡献指南
+
+欢迎贡献！请遵循以下步骤：
+
+1. Fork 本仓库
+2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 开启 Pull Request
+
+### 代码规范
+
+- 使用 TypeScript 编写代码
+- 遵循现有代码风格
+- 为新功能添加测试
+- 确保所有测试通过 (`bun test --recursive`)
+
 ## 许可证
 
 MIT
 
 ## 相关链接
 
-- [Claude Code 官方文档](https://docs.claude.ai/claude-code)
+- [Claude Code 官方文档](https://docs.anthropic.com/claude-code)
 - [Claude Agent SDK](https://github.com/anthropics/claude-agent-sdk)
 - [Linear API 文档](https://developers.linear.app)
 - [Bun 官方文档](https://bun.sh/docs)
