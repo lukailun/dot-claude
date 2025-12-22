@@ -14,7 +14,7 @@
 ## 目录结构
 
 ```
-.claude/
+claude-code/
 ├── hooks/
 │   ├── UserPromptSubmit.ts   # Hook 入口（使用 workspace 依赖）
 │   └── package.json           # 依赖配置
@@ -24,7 +24,7 @@
 
 ## 与用户安装的区别
 
-| 项目 | 开发环境 (.claude) | 用户环境 (~/.claude) |
+| 项目 | 开发环境 (claude-code) | 用户环境 (~/.claude) |
 |------|-------------------|---------------------|
 | 依赖方式 | workspace:* 依赖 | 复制的源代码文件 |
 | commands/ | 从 templates/ 链接 | 从 templates/ 复制 |
@@ -35,7 +35,7 @@
 
 1. **设置开发环境**
    ```bash
-   cd .claude/hooks
+   cd claude-code/hooks
    bun install
    ```
 

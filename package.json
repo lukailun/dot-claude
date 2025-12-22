@@ -4,7 +4,7 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    ".claude/hooks"
+    "claude-code/hooks"
   ],
   "scripts": {
     "test": "bun test --recursive",

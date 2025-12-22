@@ -58,8 +58,8 @@ bun cli install --force
 ### 3. 完成配置
 
 ```bash
-# 1. 安装依赖
-cd ~/.claude/hooks
+# 1. 安装依赖（在 ~/.claude/ 根目录）
+cd ~/.claude
 bun install
 
 # 2. 配置 settings.json
@@ -135,7 +135,7 @@ ai-dev-kit/
 │   │   └── package.template.json
 │   └── cursor/                   # Cursor 模板（预留）
 │
-└── .claude/                       # 开发环境 ⭐
+└── claude-code/                   # 开发环境 ⭐
     ├── hooks/                    # 使用 workspace 依赖
     ├── commands@ -> templates/   # 符号链接
     └── prompts@ -> templates/    # 符号链接
@@ -313,7 +313,7 @@ bun cli help
 
 ### 项目角色说明
 
-**开发环境** (`.claude/`)：
+**开发环境** (`claude-code/`)：
 - 项目开发者的测试环境
 - 使用 `workspace:*` 依赖，直接引用源代码
 - 通过符号链接使用 templates 中的配置
@@ -527,9 +527,9 @@ bun cli processors disable variation
 2. API Key 有正确的权限
 3. Issue ID 格式正确（如 `TEAM-123`）
 
-### Q: 开发环境 (.claude/) 和用户环境 (~/.claude/) 有什么区别？
+### Q: 开发环境 (claude-code/) 和用户环境 (~/.claude/) 有什么区别？
 
-| 项目 | 开发环境 (.claude) | 用户环境 (~/.claude) |
+| 项目 | 开发环境 (claude-code) | 用户环境 (~/.claude) |
 |------|-------------------|---------------------|
 | 用途 | 开发和测试 | 生产使用 |
 | 依赖方式 | workspace:* | 复制的源代码 |

@@ -9,7 +9,7 @@
         "typescript": "^5",
       },
     },
-    ".claude/hooks": {
+    "claude-code/hooks": {
       "name": "hooks",
       "dependencies": {
         "@ai-dev-kit/hooks": "workspace:*",
@@ -124,7 +124,7 @@
 
     "graphql": ["graphql@15.10.1", "", {}, "sha512-BL/Xd/T9baO6NFzoMpiMD7YUZ62R6viR5tp/MULVEnbYJXZA//kRNW7J0j1w/wXArgL0sCxhDfK5dczSKn3+cg=="],
 
-    "hooks": ["hooks@workspace:.claude/hooks"],
+    "hooks": ["hooks@workspace:claude-code/hooks"],
 
     "typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
 

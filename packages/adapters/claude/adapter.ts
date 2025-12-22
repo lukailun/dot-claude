@@ -149,9 +149,9 @@ try {
       await fixImports(hooksDir);
       console.log(`✓ 导入路径已修复`);
 
-      // 3. 生成 package.json
+      // 3. 生成 package.json（在 claudeHome 根目录）
       await writeFile(
-        join(hooksDir, 'package.json'),
+        join(claudeHome, 'package.json'),
         this.generatePackageJson(),
         'utf-8'
       );
@@ -223,7 +223,7 @@ try {
     const claudeHome = getClaudeHome();
     return `下一步:
   1. 安装依赖:
-     cd ${hooksDir}
+     cd ${claudeHome}
      bun install
 
   2. 配置 settings.json:
