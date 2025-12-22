@@ -1,5 +1,5 @@
 {
-  "name": ".claude",
+  "name": "ai-dev-kit",
   "module": "index.ts",
   "type": "module",
   "private": true,

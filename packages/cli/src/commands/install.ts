@@ -88,16 +88,28 @@ export async function installCommand(): Promise<void> {
     await fixImports(hooksDir);
     console.log(`✓ 导入路径已修复`);
 
-    // 3. 创建 package.json
+    // 3. 生成 package.json
+    const hooksPackageJsonPath = join(projectRoot, 'packages/hooks/package.json');
+    const hooksPackageJson = JSON.parse(await readFile(hooksPackageJsonPath, 'utf-8'));
+
+    // 提取依赖，排除 workspace 依赖
+    const dependencies: Record<string, string> = {};
+    if (hooksPackageJson.dependencies) {
+      for (const [name, version] of Object.entries(hooksPackageJson.dependencies)) {
+        if (typeof version === 'string' && !version.startsWith('workspace:')) {
+          dependencies[name] = version;
+        }
+      }
+    }
+
+    // 添加 Claude Agent SDK（hooks 运行时需要）
+    dependencies['@anthropic-ai/claude-agent-sdk'] = '^0.1.69';
+
     const packageJson = {
       name: "claude-hooks",
       type: "module",
       private: true,
-      dependencies: {
-        "@linear/sdk": "^68.0.0",
-        "@anthropic-ai/claude-agent-sdk": "^0.1.69",
-        "dotenv": "^17.2.3"
-      }
+      dependencies
     };
 
     await writeFile(
@@ -105,87 +117,27 @@ export async function installCommand(): Promise<void> {
       JSON.stringify(packageJson, null, 2),
       'utf-8'
     );
-    console.log(`✓ 创建 package.json`);
+    console.log(`✓ 生成 package.json`);
 
-    // 4. 创建 UserPromptSubmit.ts
-    const hookContent = `/**
- * AI-Dev-Kit UserPromptSubmit Hook
- */
-import { type UserPromptSubmitHookInput } from "@anthropic-ai/claude-agent-sdk";
-import { getEnabledProcessors } from "./config.ts";
+    // 4. 复制 UserPromptSubmit.ts
+    const userPromptSubmitSrc = join(projectRoot, '.claude/hooks/UserPromptSubmit.ts');
+    await cp(userPromptSubmitSrc, join(hooksDir, 'UserPromptSubmit.ts'));
+    console.log(`✓ 复制 UserPromptSubmit.ts`);
 
-try {
-  const input = await Bun.stdin.json() as UserPromptSubmitHookInput;
-  const { prompt } = input;
-
-  if (!prompt || typeof prompt !== 'string') {
-    throw new Error('无效的提示词输入');
-  }
-
-  const processors = getEnabledProcessors();
-
-  let processedPrompt = prompt;
-  for (const { processor } of processors) {
-    processedPrompt = await processor(processedPrompt);
-  }
-
-  console.log(processedPrompt);
-
-} catch (error) {
-  console.error('处理过程中发生错误:', error instanceof Error ? error.message : String(error));
-  console.log(prompt ?? '');
-}
-`;
-
-    await writeFile(
-      join(hooksDir, 'UserPromptSubmit.ts'),
-      hookContent,
-      'utf-8'
-    );
-    console.log(`✓ 创建 UserPromptSubmit.ts`);
-
-    // 5. 创建 prompts 目录和模板
+    // 5. 复制 prompts 目录和模板
     const promptsDir = join(claudeHome, 'prompts');
     await mkdir(promptsDir, { recursive: true });
 
-    const variationsTemplate = `为以下指令生成 $count 种可能的解决方案：
+    const variationsSrc = join(projectRoot, '.claude/prompts/variations.md');
+    await cp(variationsSrc, join(promptsDir, 'variations.md'));
+    console.log(`✓ 复制 variations.md`);
 
-每个方案请按照以下模板格式输出：
-
-## 方案 $n
-
-### 实现步骤：
-1. ...
-2. ...
-3. ...
-
-### 设计思路：
-...
-
-### 权衡优劣：
-...
-
----
-
-指令：$instruction
-`;
-
-    await writeFile(
-      join(promptsDir, 'variations.md'),
-      variationsTemplate,
-      'utf-8'
-    );
-    console.log(`✓ 创建 variations.md`);
-
-    // 6. 创建 .env 模板
+    // 6. 复制 .env 模板
     const envPath = join(claudeHome, '.env');
     if (!existsSync(envPath)) {
-      const envTemplate = `# AI-Dev-Kit 环境变量配置
-# Linear API Key (可选 - 用于 Linear 集成)
-# LINEAR_API_KEY=your_linear_api_key_here
-`;
-      await writeFile(envPath, envTemplate, 'utf-8');
-      console.log(`✓ 创建 .env`);
+      const envTemplateSrc = join(projectRoot, '.claude/.env.template');
+      await cp(envTemplateSrc, envPath);
+      console.log(`✓ 复制 .env`);
     } else {
       console.log(`✓ .env 已存在`);
     }
