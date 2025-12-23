@@ -3,7 +3,9 @@
   "compilerOptions": {
     "composite": true,
     "noEmit": false,
-    "rootDir": "./src",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "rootDir": ".",
     "outDir": "./dist"
   },
   "include": ["src/**/*", "tests/**/*"],
