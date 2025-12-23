@@ -3,7 +3,7 @@
  * 生成 Claude Code 特定的 hook 和配置文件
  */
 
-import { IDEAdapter, AdapterConfig, InstallResult } from "../shared";
+import { IDEAdapter } from "../shared";
 import { getClaudeHome } from "@ai-dev-kit/core/utils";
 import { join, dirname } from "path";
 import { mkdir, writeFile, cp, readFile } from "fs/promises";
@@ -82,14 +82,15 @@ try {
       private: true,
       dependencies: {
         "@linear/sdk": "^68.0.0",
-        "@anthropic-ai/claude-agent-sdk": "^0.1.75"
+        "@anthropic-ai/claude-agent-sdk": "^0.1.75",
+        "dotenv": "^17.2.3"
       }
     };
 
     return JSON.stringify(packageJson, null, 2);
   }
 
-  async install(): Promise<InstallResult> {
+  async install(): Promise<void> {
     const claudeHome = getClaudeHome();
     const hooksDir = this.getInstallPath();
     const filesCreated: string[] = [];
