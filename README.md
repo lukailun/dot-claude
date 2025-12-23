@@ -38,7 +38,7 @@ bun install
 ### 2. 安装到 IDE
 
 ```bash
-# 安装到所有支持的 IDE（当前：Claude Code）
+# 安装到 Claude Code 和 Cursor
 bun cli install
 
 # 或指定特定 IDE
