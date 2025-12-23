@@ -3,7 +3,7 @@
  * 生成 Claude Code 特定的 hook 和配置文件
  */
 
-import { IDEAdapter } from "../shared";
+import { IDEAdapter, type AdapterConfig, type InstallResult } from "../shared";
 import { getClaudeHome } from "@ai-dev-kit/core/utils";
 import { join, dirname } from "path";
 import { mkdir, writeFile, cp, readFile } from "fs/promises";
@@ -90,7 +90,7 @@ try {
     return JSON.stringify(packageJson, null, 2);
   }
 
-  async install(): Promise<void> {
+  async install(): Promise<InstallResult> {
     const claudeHome = getClaudeHome();
     const hooksDir = this.getInstallPath();
     const filesCreated: string[] = [];

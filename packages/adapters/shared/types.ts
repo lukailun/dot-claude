@@ -62,7 +62,7 @@ export abstract class IDEAdapter {
   /**
    * 执行安装
    */
-  abstract install(): Promise<void>;
+  abstract install(): Promise<InstallResult>;
 
   /**
    * 安装依赖
